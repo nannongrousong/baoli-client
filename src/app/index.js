@@ -4,6 +4,7 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import 'APP_STYLES/utilities/main.less';
 import { LocaleProvider } from 'antd';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
+import 'babel-polyfill';
 
 import Routers from 'APP_ROUTER';
 const preRouter = '/app';

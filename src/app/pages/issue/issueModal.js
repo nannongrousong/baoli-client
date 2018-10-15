@@ -1,14 +1,38 @@
 import React, { Component } from 'react';
-import { Modal, Form, Input, InputNumber, DatePicker } from 'antd';
+import { Modal, Form, Input, InputNumber, DatePicker, Upload, Icon } from 'antd';
 import { formItemLayout } from 'APP_CONFIG/formLayout';
 import createFormField from 'APP_UTILS/createFormField';
 import { errorHandle } from 'APP_UTILS/common';
-import { addIssue, editIssue } from 'APP_SERVICE/BAOLI';
+import { addIssue, editIssue, getIssuePic } from 'APP_SERVICE/BAOLI';
 import moment from 'moment';
 
 const FormItem = Form.Item;
+const { TextArea } = Input;
+
+const uploadButton = (
+    <div>
+        <Icon type={'plus'} />
+        <div className="ant-upload-text">Upload</div>
+    </div>
+);
 
 class GroupInfo extends Component {
+    state = {
+        imagePic: [],
+        actualPic: []
+    }
+
+    componentDidMount() {
+        const { record: { IssueID } } = this.props;
+        getIssuePic({ IssueID }).then((resData) => {
+            const { Data: { Actual, Image } } = resData;
+            this.setState({
+                imagePic: Image,
+                actualPic: Actual
+            });
+        }).catch(errorHandle);
+    }
+
     saveData = (e) => {
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, values) => {
@@ -43,6 +67,7 @@ class GroupInfo extends Component {
         return (
             <Modal
                 visible
+                width={600}
                 title={record ? '修改' : '新增'}
                 onCancel={closeModal}
                 onOk={this.saveData}>
@@ -79,7 +104,7 @@ class GroupInfo extends Component {
                         {
                             getFieldDecorator('IssueAppeal', {
                                 rules: [{ required: true, message: '请填写业主诉求问题' }]
-                            })(<Input maxLength={1000} />)
+                            })(<TextArea rows={6} maxLength={1000} />)
                         }
                     </FormItem>
 
@@ -98,6 +123,33 @@ class GroupInfo extends Component {
                         label='承诺完成整改截止日期'>
                         {
                             getFieldDecorator('RectifyLastDate')(<DatePicker className='w-100' />)
+                        }
+                    </FormItem>
+
+                    <FormItem
+                        {...formItemLayout}
+                        label='效果图'>
+                        {
+                            getFieldDecorator('ImagePic')(
+                                <Upload
+                                    accept='image/*'
+                                    action=''
+                                    listType='picture-card'>
+                                    {uploadButton}
+                                </Upload>
+                            )
+                        }
+                    </FormItem>
+
+                    <FormItem
+                        {...formItemLayout}
+                        label='实际图'>
+                        {
+                            getFieldDecorator('ActualPic')(
+                                <Upload listType='picture-card'>
+                                    {uploadButton}
+                                </Upload>
+                            )
                         }
                     </FormItem>
 

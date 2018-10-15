@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Table, Button, Divider, Modal } from 'antd';
 import { listIssue, delIssue } from 'APP_SERVICE/BAOLI';
 import { errorHandle } from 'APP_UTILS/common';
+import styles from 'APP_STYLES/issue.less';
 
 import GroupModal from './groupModal';
 import IssueModal from './issueModal';
@@ -79,6 +80,12 @@ class ResTable extends Component {
         });
     }
 
+    handleRowClass = (record) => {
+        if(record.IsGroup) {
+            return styles['group-row'];
+        }
+    }
+
     render() {
         const renderCtx = (value, row) => {
             if (!row.IsGroup) {
@@ -96,6 +103,7 @@ class ResTable extends Component {
 
         const columns = [{
             title: '序号',
+            width: '6%',
             dataIndex: 'IssueNo',
             render: (value, row) => {
                 const obj = {
@@ -104,12 +112,12 @@ class ResTable extends Component {
                 };
                 if (row.IsGroup) {
                     obj.children = (
-                        <div>
+                        <Fragment>
                             {row.GroupAppeal}
                             <a className='ml-32' onClick={this.editGroup.bind(this, row)}>修改分类</a>
                             <Divider type='vertical' />
                             <a onClick={this.addIssue.bind(this, row)}>添加问题</a>
-                        </div>
+                        </Fragment>
                     );
                     obj.props.colSpan = 5;
                 }
@@ -117,25 +125,29 @@ class ResTable extends Component {
             }
         }, {
             title: '业主诉求问题',
+            width: '30%',
             dataIndex: 'IssueAppeal',
             render: renderCtx
         }, {
             title: '保利拟整改措施',
+            width: '30%',
             dataIndex: 'RectfyInfo',
             render: renderCtx
         }, {
             title: '保利承诺完成整改截止日期',
+            width: '10%',
             dataIndex: 'RectifyLastDate',
             render: renderCtx
         }, {
             title: '操作',
+            width: '14%',
             dataIndex: 'Action',
             render: (value, row) => {
                 if (!row.IsGroup) {
                     return {
                         children: (
                             <Fragment>
-                                <a onClick={this.editIssue.bind(this, row)}>修改</a>
+                                <a onClick={this.editIssue.bind(this, row)}>详情</a>
                                 <Divider type='vertical' />
                                 <a onClick={this.delIssue.bind(this, row)}>删除</a>
                             </Fragment>
@@ -160,7 +172,8 @@ class ResTable extends Component {
                     bordered
                     pagination={false}
                     columns={columns}
-                    dataSource={dataSource}>
+                    dataSource={dataSource}
+                    rowClassName={this.handleRowClass}>
 
                 </Table>
 
