@@ -1,9 +1,15 @@
-import React, { Component } from 'react';
-import { Button, Upload } from 'antd';
+import React, { Component, Fragment } from 'react';
+import { Upload, Modal } from 'antd';
 import PropTypes from 'prop-types';
-import { Upload_Attach } from 'APP_SERVICE/Attach';
+import { Upload_Attach, Del_Attach } from 'APP_SERVICE/Attach';
+import { errorHandle } from 'APP_UTILS/common';
 
 class Index extends Component {
+    state = {
+        previewVisible: false,
+        previewUrl: ''
+    }
+
     //  https://github.com/react-component/upload#customrequest
     customRequest = async ({ onError, onSuccess, data, filename, file }) => {
         //  onError错误回调
@@ -39,19 +45,58 @@ class Index extends Component {
         };
     }
 
+    closePreview = () => {
+        this.setState({
+            previewVisible: false
+        });
+    }
+
+    handlePreview = (file) => {
+        this.setState({
+            previewUrl: file.url || file.thumbUrl,
+            previewVisible: true,
+        });
+    }
+
+    handleFileChange = async ({ file, fileList }) => {
+        console.log('file', file);
+        const { onChange } = this.props;
+        const { status, response } = file;
+        if (status == 'removed') {
+            try {
+                await Del_Attach(response);
+            } catch (err) {
+                errorHandle(err);
+            }
+        }
+
+        onChange({ file, fileList });
+    }
+
     render() {
-        const { showTitle = '选择文件', showType = 'button' } = this.props;
+        const { children, supportPreview, maxFileLength = 10, fileList } = this.props;
+        const { previewUrl, previewVisible } = this.state;
+
         return (
-            <Upload
-                {...this.props}
-                customRequest={this.customRequest} >
+            <Fragment>
+                <Upload
+                    {...this.props}
+                    onPreview={this.handlePreview}
+                    customRequest={this.customRequest}
+                    onChange={this.handleFileChange} >
+                    {fileList.length <= maxFileLength && children}
+                </Upload>
                 {
-                    showType == 'button'
-                        ? <Button>{showTitle}</Button>
-                        : <a href='#' className='w-100'>{showTitle}</a>
+                    supportPreview &&
+                    <Modal
+                        visible={previewVisible}
+                        footer={null}
+                        onCancel={this.closePreview}>
+                        <img alt="example" style={{ width: '100%' }} src={previewUrl} />
+                    </Modal>
                 }
 
-            </Upload>
+            </Fragment>
         );
     }
 }

@@ -1,12 +1,12 @@
 import React, { Component, Fragment } from 'react';
-import { Table, Button, Divider, Modal } from 'antd';
-import { listIssue, delIssue } from 'APP_SERVICE/BAOLI';
+import { Table, Button, Divider, Modal, Row, Col, Icon, message } from 'antd';
+import { listIssue, delIssue } from 'APP_SERVICE/Issue';
 import { errorHandle } from 'APP_UTILS/common';
 import styles from 'APP_STYLES/issue.less';
 
 import GroupModal from './groupModal';
 import IssueModal from './issueModal';
-
+import LoginModal from './loginModal';
 
 class ResTable extends Component {
     state = {
@@ -14,11 +14,15 @@ class ResTable extends Component {
         showGroupModal: false,
         groupInfo: null,
         showIssueModal: false,
-        issueInfo: null
+        issueInfo: null,
+        showLoginModal: false,
+        isLogin: false
     }
 
     componentDidMount() {
         this.reloadData();
+
+        !!sessionStorage.getItem('AUTH_INFO') && this.notifyLogin();
     }
 
     reloadData = () => {
@@ -30,20 +34,20 @@ class ResTable extends Component {
     }
 
     addGroup = () => {
-        this.setState({
+        this.getLoginState() && this.setState({
             showGroupModal: true
         });
     }
 
     editGroup = (record) => {
-        this.setState({
+        this.getLoginState() && this.setState({
             showGroupModal: true,
             groupInfo: record
         });
     }
 
     addIssue = (record) => {
-        this.setState({
+        this.getLoginState() && this.setState({
             showIssueModal: true,
             issueInfo: {
                 GroupID: record.GroupID
@@ -59,7 +63,7 @@ class ResTable extends Component {
     }
 
     delIssue = ({ IssueID, IssueAppeal }) => {
-        Modal.confirm({
+        this.getLoginState() && Modal.confirm({
             title: '信息',
             content: `请确认要删除[${IssueAppeal}]`,
             onOk: async () => {
@@ -74,16 +78,49 @@ class ResTable extends Component {
 
     closeModal = (type) => {
         this.setState({
-            [{ group: 'showGroupModal', issue: 'showIssueModal' }[type]]: false,
+            [{ group: 'showGroupModal', issue: 'showIssueModal', login: 'showLoginModal' }[type]]: false,
             groupInfo: null,
             issueInfo: null
         });
     }
 
     handleRowClass = (record) => {
-        if(record.IsGroup) {
+        if (record.IsGroup) {
             return styles['group-row'];
         }
+    }
+
+    showIntro = () => {
+        Modal.info({
+            title: '信息',
+            content: (
+                <div className='mt-24'>
+                    <p>作者：4-2402</p>
+                    <p>邮件：yuanwansong@hotmail.com</p>
+                </div>
+            )
+        });
+    }
+
+    loginSys = () => {
+        this.setState({
+            showLoginModal: true
+        });
+    }
+
+    notifyLogin = () => {
+        this.setState({
+            isLogin: true
+        });
+    }
+
+    getLoginState = () => {
+        const { isLogin } = this.state;
+        if (!isLogin) {
+            message.info('请登录后操作！');
+            return false;
+        }
+        return true;
     }
 
     render() {
@@ -119,28 +156,52 @@ class ResTable extends Component {
                             <a onClick={this.addIssue.bind(this, row)}>添加问题</a>
                         </Fragment>
                     );
-                    obj.props.colSpan = 5;
+                    obj.props.colSpan = 7;
                 }
                 return obj;
             }
         }, {
-            title: '业主诉求问题',
-            width: '30%',
+            title: '诉求',
+            width: '22%',
             dataIndex: 'IssueAppeal',
             render: renderCtx
         }, {
-            title: '保利拟整改措施',
-            width: '30%',
+            title: '拟整改措施',
+            width: '22%',
             dataIndex: 'RectfyInfo',
             render: renderCtx
         }, {
-            title: '保利承诺完成整改截止日期',
+            title: '整改截止日期',
             width: '10%',
             dataIndex: 'RectifyLastDate',
             render: renderCtx
         }, {
+            title: '状态',
+            width: '10%',
+            dataIndex: 'IssueState',
+            render: (value, row) => {
+                if (!row.IsGroup) {
+                    return {
+                        children: (
+                            <span>{{ 1: '新建', 2: '[开发商]拒绝', 3: '整改中', 4: '整改完毕' }[value]}</span>
+                        ),
+                        props: {}
+                    };
+                } else {
+                    return {
+                        children: null,
+                        props: { colSpan: 0 }
+                    };
+                }
+            }
+        }, {
+            title: '备注',
+            width: '10%',
+            dataIndex: 'IssueRemark',
+            render: renderCtx
+        }, {
             title: '操作',
-            width: '14%',
+            width: '10%',
             dataIndex: 'Action',
             render: (value, row) => {
                 if (!row.IsGroup) {
@@ -162,12 +223,20 @@ class ResTable extends Component {
                 }
             }
         }];
-        const { dataSource, showGroupModal, groupInfo, showIssueModal, issueInfo } = this.state;
+        const { dataSource, showGroupModal, groupInfo, showIssueModal, issueInfo, showLoginModal, isLogin } = this.state;
 
         return (
             <Fragment>
                 <Table
-                    title={() => <Button type='primary' onClick={this.addGroup}>添加分类</Button>}
+                    title={() => (
+                        <Row>
+                            <Col span={12}><Button type='primary' onClick={this.addGroup}>添加分类</Button></Col>
+                            <Col span={12} className='text-right'>
+                                <Icon className={styles.icon} onClick={this.showIntro} type="info-circle" theme="twoTone" />
+                                {!isLogin && <Icon className={styles.icon} onClick={this.loginSys} type="dashboard" theme="twoTone" />}
+                            </Col>
+                        </Row>
+                    )}
                     rowKey='IssueNo'
                     bordered
                     pagination={false}
@@ -190,7 +259,15 @@ class ResTable extends Component {
                     <IssueModal
                         closeModal={this.closeModal.bind(this, 'issue')}
                         record={issueInfo}
-                        reloadData={this.reloadData} />
+                        reloadData={this.reloadData}
+                        isLogin={isLogin} />
+                }
+
+                {
+                    showLoginModal &&
+                    <LoginModal
+                        notifyLogin={this.notifyLogin}
+                        closeModal={this.closeModal.bind(this, 'login')} />
                 }
             </Fragment>
         );

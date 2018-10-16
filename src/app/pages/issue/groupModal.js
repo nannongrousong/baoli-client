@@ -3,7 +3,7 @@ import { Modal, Form, Input } from 'antd';
 import { formItemLayout } from 'APP_CONFIG/formLayout';
 import createFormField from 'APP_UTILS/createFormField';
 import { errorHandle } from 'APP_UTILS/common';
-import { addGroup, editGroup } from 'APP_SERVICE/BAOLI';
+import { addGroup, editGroup } from 'APP_SERVICE/Group';
 
 const FormItem = Form.Item;
 
