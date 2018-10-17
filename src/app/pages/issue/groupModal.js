@@ -3,7 +3,7 @@ import { Modal, Form, Input } from 'antd';
 import { formItemLayout } from 'APP_CONFIG/formLayout';
 import createFormField from 'APP_UTILS/createFormField';
 import { errorHandle } from 'APP_UTILS/common';
-import { addGroup, editGroup } from 'APP_SERVICE/Group';
+import { Add_Group, Edit_Group } from 'APP_SERVICE/Group';
 
 const FormItem = Form.Item;
 
@@ -18,12 +18,12 @@ class GroupInfo extends Component {
             let { closeModal, reloadData } = this.props;
 
             if (values.GroupID) {
-                editGroup(values).then(() => {
+                Edit_Group(values).then(() => {
                     reloadData();
                     closeModal();
                 }).catch(errorHandle);
             } else {
-                addGroup(values).then(() => {
+                Add_Group(values).then(() => {
                     reloadData();
                     closeModal();
                 }).catch(errorHandle);

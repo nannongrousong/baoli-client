@@ -11,7 +11,7 @@ module.exports = {
     }],
     proxy: [{
         router: '/baoli/api',
-        target: 'http://localhost:82',
+        target: 'http://localhost:10002',
         pathRewrite: { '^/baoli/api': '/' }
     }]
 }

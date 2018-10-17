@@ -3,7 +3,7 @@ import { Modal, Form, Input, InputNumber, DatePicker, message, Icon, Select } fr
 import { formItemLayout } from 'APP_CONFIG/formLayout';
 import createFormField from 'APP_UTILS/createFormField';
 import { errorHandle } from 'APP_UTILS/common';
-import { addIssue, editIssue, getIssuePic } from 'APP_SERVICE/Issue';
+import { Add_Issue, Edit_Issue, Get_Issue_Pic } from 'APP_SERVICE/Issue';
 import CommonUpload from 'APP_COMPONENT/Upload';
 import moment from 'moment';
 
@@ -19,7 +19,7 @@ class IssueInfo extends Component {
 
     componentDidMount() {
         const { record: { IssueID } } = this.props;
-        getIssuePic({ IssueID }).then((resData) => {
+        Get_Issue_Pic({ IssueID }).then((resData) => {
             const { Data } = resData;
             let imagePic = [];
             let actualPic = [];
@@ -68,14 +68,14 @@ class IssueInfo extends Component {
             };
 
             if (values.IssueID) {
-                editIssue(reqParam).then(({ Code }) => {
+                Edit_Issue(reqParam).then(({ Code }) => {
                     if (Code) {
                         reloadData();
                         closeModal();
                     }
                 }).catch(errorHandle);
             } else {
-                addIssue(reqParam).then(({ Code }) => {
+                Add_Issue(reqParam).then(({ Code }) => {
                     if (Code) {
                         reloadData();
                         closeModal();

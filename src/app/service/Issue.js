@@ -1,8 +1,8 @@
 import request from 'APP_UTILS/request';
 
-export const listIssue = (params) => request('/Issue', params);
-export const addIssue = (params) => request('/Issue', params, 'POST');
-export const editIssue = (params) => request('/Issue', params, 'PUT');
-export const delIssue = (params) => request('/Issue', params, 'DELETE');
-export const getIssuePic = (params) => request('/Issue/Pic', params);
-export const delIssuePic = (params) => request('/Issue/Pic', params, 'DELETE');
+export const List_Issue = (params) => request('/Issue', params);
+export const Add_Issue = (params) => request('/Issue', params, 'POST');
+export const Edit_Issue = (params) => request('/Issue', params, 'PUT');
+export const Del_Issue = (params) => request('/Issue', params, 'DELETE');
+export const Get_Issue_Pic = (params) => request('/Issue/Pic', params);
+export const Del_Issue_Pic = (params) => request('/Issue/Pic', params, 'DELETE');

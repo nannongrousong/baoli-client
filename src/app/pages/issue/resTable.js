@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Table, Button, Divider, Modal, Row, Col, Icon, message } from 'antd';
-import { listIssue, delIssue } from 'APP_SERVICE/Issue';
+import { List_Issue, Del_Issue } from 'APP_SERVICE/Issue';
+import { Del_Group } from 'APP_SERVICE/Group';
 import { errorHandle } from 'APP_UTILS/common';
 import styles from 'APP_STYLES/issue.less';
 
@@ -26,7 +27,7 @@ class ResTable extends Component {
     }
 
     reloadData = () => {
-        listIssue().then((resData) => {
+        List_Issue().then((resData) => {
             this.setState({
                 dataSource: resData.Data
             });
@@ -43,6 +44,20 @@ class ResTable extends Component {
         this.getLoginState() && this.setState({
             showGroupModal: true,
             groupInfo: record
+        });
+    }
+
+    delGroup = ({ GroupID, GroupAppeal }) => {
+        this.getLoginState() && Modal.confirm({
+            title: '信息',
+            content: `请确认要删除[${GroupAppeal}]`,
+            onOk: async () => {
+                await Del_Group(GroupID).then((resData) => {
+                    if (resData.Code) {
+                        this.reloadData();
+                    }
+                }).catch(errorHandle);
+            }
         });
     }
 
@@ -67,7 +82,7 @@ class ResTable extends Component {
             title: '信息',
             content: `请确认要删除[${IssueAppeal}]`,
             onOk: async () => {
-                await delIssue(IssueID).then((resData) => {
+                await Del_Issue(IssueID).then((resData) => {
                     if (resData.Code) {
                         this.reloadData();
                     }
@@ -153,6 +168,8 @@ class ResTable extends Component {
                             {row.GroupAppeal}
                             <a className='ml-32' onClick={this.editGroup.bind(this, row)}>修改分类</a>
                             <Divider type='vertical' />
+                            <a onClick={this.delGroup.bind(this, row)}>删除分类</a>
+                            <Divider type='vertical' />
                             <a onClick={this.addIssue.bind(this, row)}>添加问题</a>
                         </Fragment>
                     );
@@ -230,7 +247,9 @@ class ResTable extends Component {
                 <Table
                     title={() => (
                         <Row>
-                            <Col span={12}><Button type='primary' onClick={this.addGroup}>添加分类</Button></Col>
+                            <Col span={12}>
+                                <Button type='primary' onClick={this.addGroup}>添加分类</Button>
+                            </Col>
                             <Col span={12} className='text-right'>
                                 <Icon className={styles.icon} onClick={this.showIntro} type="info-circle" theme="twoTone" />
                                 {!isLogin && <Icon className={styles.icon} onClick={this.loginSys} type="dashboard" theme="twoTone" />}
