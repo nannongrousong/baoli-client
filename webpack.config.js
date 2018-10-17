@@ -27,7 +27,7 @@ const recurReadDir = (rootPath) => {
 let jsconfigPaths = {};
 let allDirs = recurReadDir(rootPath);
 let webpackAlias = allDirs.reduce((previous, current) => {
-    let key = current.substring(rootPath.length + 1).split(pathSep).join('_').toUpperCase();    
+    let key = current.substring(rootPath.length + 1).split(pathSep).join('_').toUpperCase();
     previous[key] = current;
     jsconfigPaths[key + '/*'] = [current + pathSep + '*'];
     return previous;
@@ -40,7 +40,7 @@ fs.writeFileSync(path.resolve(__dirname, 'jsconfig.json'), JSON.stringify(jsconf
 
 let webpackEntry = entries.reduce((previous, current) => {
     if (NODE_ENV == dev) {
-    previous[current.name] = ['webpack-hot-middleware/client?quiet=true&reload=true', path.resolve(__dirname, current.entry)];
+        previous[current.name] = ['webpack-hot-middleware/client?quiet=true&reload=true', path.resolve(__dirname, current.entry)];
     } else {
         previous[current.name] = [path.resolve(__dirname, current.entry)];
     }
@@ -55,7 +55,7 @@ let webpackConfig = {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].[hash].js',
         //  cdn http://cdn.your.com/static
-        publicPath: '/'
+        publicPath: NODE_ENV == dev ? '/' : 'https://nannongrousong.xin/baoli/web/'
     },
     resolve: {
         extensions: ['.js', '.css', '.json'],
