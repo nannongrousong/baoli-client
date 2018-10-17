@@ -13,7 +13,7 @@ class App extends Component {
     render() {
         return (
             <LocaleProvider locale={zhCN}>
-                <BrowserRouter>
+                <BrowserRouter basename='/baoli/web'>
                     <Switch>
                         {
                             Routers.map((routerItem, index) => {

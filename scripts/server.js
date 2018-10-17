@@ -33,7 +33,7 @@ if (env == dev) {
             to: (context) => (context.parsedUrl.pathname)
         }, ...projectConfig.entries.map((item) => {
             return {
-                from: new RegExp(`^\/${item.name}\/`),
+                from: new RegExp(`^\/baoli\/web\/${item.name}\/`),
                 to: `/${item.name}.html`
             }
         })]
