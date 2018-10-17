@@ -10,8 +10,8 @@ module.exports = {
         favicon: 'src/app/favicon.ico'
     }],
     proxy: [{
-        router: '/api',
+        router: '/baoli/api',
         target: 'http://localhost:81',
-        pathRewrite: { '^/api': '/' }
+        pathRewrite: { '^/baoli/api': '/' }
     }]
 }

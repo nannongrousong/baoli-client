@@ -7,7 +7,7 @@ import 'isomorphic-fetch';
  * @param {请求类型，默认GET} method，可选POST/PUT/DELETE/FILE/GET
  */
 export default async (url, params, method = 'GET') => {
-    url = '/api' + url;
+    url = '/baoli/api' + url;
 
     console.log('%c请求地址：', 'color:red;', url);
     console.log('%c请求参数：', 'color:red;', params);
