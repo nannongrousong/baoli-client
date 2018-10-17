@@ -194,7 +194,7 @@ class ResTable extends Component {
             render: renderCtx
         }, {
             title: '状态',
-            width: '10%',
+            width: '6%',
             dataIndex: 'IssueState',
             render: (value, row) => {
                 if (!row.IsGroup) {
@@ -213,7 +213,7 @@ class ResTable extends Component {
             }
         }, {
             title: '备注',
-            width: '10%',
+            width: '14%',
             dataIndex: 'IssueRemark',
             render: renderCtx
         }, {
